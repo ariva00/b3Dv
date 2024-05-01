@@ -32,3 +32,14 @@ classifiers = [
 Homepage = "https://github.com/ariva00/b3Dv"
 Repository = "https://github.com/ariva00/b3Dv.git"
 Issues = "https://github.com/ariva00/b3Dv/issues"
+
+[tool.hatch.build.targets.sdist]
+include =[
+    "README.md",
+    "LICENSE.txt",
+    "src/*",
+]
+exclude = [
+  ".git/",
+  "env/",
+]
