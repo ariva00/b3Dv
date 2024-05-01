@@ -4,7 +4,6 @@ import open3d as o3d
 import os
 
 from b3Dv import Scene
-from b3Dv import Camera
 from b3Dv import Mesh
 from b3Dv import SunLight
 
@@ -18,8 +17,6 @@ float_attr = V[:, 2]
 color_attr = np.hstack((V, np.ones((V.shape[0], 1))))
 
 scene = Scene(resolution=(1080, 1080))
-camera = Camera()
-scene.addCamera(camera)
 
 mesh = Mesh("numpyMesh", V, [], F, scale=(0.5,0.5,0.5))
 mesh.addColorAttribute(color_attr, "color_attr")
@@ -31,8 +28,6 @@ mesh.material.setEmissionStrength(10)
 
 mesh.setShadeSmooth()
 mesh.asPointCloud()
-
-mesh.setLocation((0, 0, -mesh.getMinZ()))
 scene.addObject(mesh)
 
 floor = mesh.getFloor()
@@ -41,8 +36,8 @@ scene.addObject(floor)
 sun = SunLight(rotation=(-30 * np.pi/180, 0, -10 * np.pi/180))
 scene.addObject(sun)
 
-camera.setLocation((2,2,mesh.getMaxZ()))
-camera.setRotation((80 * np.pi/180, 0 * np.pi/180, 135 * np.pi/180))
+camera = mesh.getCamera(azimuth=70 * np.pi/180, elevation=20 * np.pi/180, distance=2.5)
+scene.addCamera(camera)
 
 scene.setSamples(8)
 

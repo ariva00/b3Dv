@@ -1,7 +1,9 @@
 import bpy
+import numpy as np
 
 from b3Dv.pointCloudNodes import MeshToPointCloudNodeTree
 from b3Dv.materials import Material
+from b3Dv.camera import Camera
 
 class Mesh:
     def __init__(
@@ -48,7 +50,6 @@ class Mesh:
                 minz = wolrd_vert[2]
         return minz
     
-    
     def getMaxZ(self):
         maxz = -float('inf')
         for vert in self.data.vertices:
@@ -66,7 +67,7 @@ class Mesh:
     def setScale(self, scale=(1, 1, 1)):
         self.object.scale = scale
 
-    def getFloor(self,  size=(10,10), shadow_catcher=True):
+    def getFloor(self, size=(10,10), shadow_catcher=True):
         minz = self.getMinZ()
         verices = [
             (-size[0]/2, -size[0]/2, 0),
@@ -81,6 +82,11 @@ class Mesh:
         floor.object.is_shadow_catcher = shadow_catcher
         return floor
     
+    def getCamera(self, azimuth=np.pi/4, elevation=np.pi/9, distance=3):
+        camera = Camera()
+        camera.focusOnPoint(self.object.location, azimuth, elevation, distance)
+        return camera
+
     def setMaterial(self, material:Material):
         self.material = material
         self.data.materials.clear()
