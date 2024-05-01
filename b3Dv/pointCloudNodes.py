@@ -17,10 +17,8 @@ class MeshToPointCloudNodeTree:
         self.nodes['realizeInstances'] = self.node_group.nodes.new(type="GeometryNodeRealizeInstances")
 
         self.node_group.interface.new_socket(name="Geometry", description="", in_out="INPUT", socket_type="NodeSocketGeometry")
-        #self.node_group.interface.new_socket(name="Radius", description="", in_out="INPUT", socket_type="NodeSocketFloat")
         self.node_group.interface.new_socket(name="Geometry", description="", in_out="OUTPUT", socket_type="NodeSocketGeometry")
 
-        #self.links['inputToIcoSphere'] = self.node_group.links.new(self.nodes['input'].outputs['Radius'], self.nodes['icoSphere'].inputs['Radius'])
         self.links['inputToMeshToPoints'] = self.node_group.links.new(self.nodes['input'].outputs['Geometry'], self.nodes['meshToPoints'].inputs['Mesh'])
         self.links['meshToPointsToInstanceOnPoints'] = self.node_group.links.new(self.nodes['meshToPoints'].outputs['Points'], self.nodes['instanceOnPoints'].inputs['Points'])
         self.links['icoSphereToSetShadeSmooth'] = self.node_group.links.new(self.nodes['icoSphere'].outputs['Mesh'], self.nodes['setShadeSmooth'].inputs['Geometry'])
@@ -36,12 +34,3 @@ class MeshToPointCloudNodeTree:
 
     def setPointsRadius(self, radius):
         self.nodes['icoSphere'].inputs['Radius'].default_value = radius
-
-class MeshToPointCloud:
-    def __init__(self, mesh):
-        self.nodeTree = MeshToPointCloudNodeTree()
-        self.modifier = mesh.modifiers.new('MeshToPointCloud', 'NODES')
-        mesh.modifiers['MeshToPointCloud'].node_group = self.nodeTree.node_group
-        
-    def setPointsRadius(self, radius):
-        self.nodeTree.nodes['icoSphere'].inputs['Radius'].default_value = radius

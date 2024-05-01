@@ -2,13 +2,11 @@ import bpy
 import numpy as np
 import open3d as o3d
 
-from scipy.io import loadmat
-
 from b3Dv.scene import Scene
 from b3Dv.camera import Camera
 from b3Dv.pointCloudNodes import MeshToPointCloudNodeTree
 from b3Dv.mesh import Mesh
-from b3Dv.materials import ColorAttributeMaterial, ColorRampAttributeMaterial
+from b3Dv.materials import Material
 from b3Dv.lights import SunLight
 
 bpy.ops.wm.read_homefile()
@@ -33,11 +31,15 @@ pc = bpy.data.pointclouds.new(name='numpy point cloud')
 
 mesh = Mesh("numpyMesh", V, [], F, scale=(0.5,0.5,0.5))
 
-attr = V[:, 0]
-mesh.addColorAttribute(np.ones((V.shape[0], 4)), "color_attr")
+attr = V[:, 2]
+mesh.addColorAttribute(np.hstack((V, np.ones((V.shape[0], 1)))), "color_attr")
 mesh.addFloatAttribute(attr, "float_attr")
 
-material = ColorRampAttributeMaterial(color_attribute="float_attr", colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 0.0, 0.0, 1.0), (0,1,0,1), (1.0, 1.0, 1.0, 1.0)])
+material = Material()
+
+material.setColorAttributeAsColor("color_attr")
+material.setFloatAttributeAsEmissionColor("float_attr")
+material.setEmissionStrength(10)
 
 modifier = MeshToPointCloudNodeTree(material=material)
 mesh.object.modifiers.new('MeshToPointCloud', 'NODES')
@@ -54,7 +56,7 @@ scene.addObject(sun)
 camera.setLocation((2,2,1.8))
 camera.setRotation((80 * np.pi/180, 0 * np.pi/180, 135 * np.pi/180))
 
-scene.data.cycles.samples = 60
+scene.data.cycles.samples = 8
 
 bpy.ops.render.render(write_still = True, scene = scene.data.name)
 

@@ -1,5 +1,7 @@
 import bpy
 
+from b3Dv.pointCloudNodes import MeshToPointCloudNodeTree
+
 class Mesh:
     def __init__(self, name="Mesh", vertices=[], edges=[], faces=[], location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1)) -> None:
         self.data = bpy.data.meshes.new(name=name)
@@ -50,3 +52,8 @@ class Mesh:
         floor = Mesh("Floor", vertices=verices, faces=faces, location=(0,0, minz + self.object.location.z))
         floor.object.is_shadow_catcher = shadow_catcher
         return floor
+
+    def toPointCloud(self, name="Pointcloud", radius = 0.01, subdivison = 3, material = None):
+        node_tree = MeshToPointCloudNodeTree(material=material, radius=radius, subdivison=subdivison)
+        modifier = self.object.modifiers.new(name, 'NODES')
+        modifier.node_group = node_tree.node_group
