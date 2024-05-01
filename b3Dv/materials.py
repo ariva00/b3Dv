@@ -2,7 +2,8 @@ import bpy
 
 class Material:
     def __init__(
-            self, name="Material",
+            self, 
+            name="Material",
             color=(1.0, 1.0, 1.0, 1.0),
             emission_color=(0.0, 0.0, 0.0, 1.0),
             roughness=0.75,

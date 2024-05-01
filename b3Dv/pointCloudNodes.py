@@ -1,7 +1,9 @@
 import bpy
 
+from b3Dv.materials import Material
+
 class MeshToPointCloudNodeTree:
-    def __init__(self, name="Pointcloud", radius = 0.01, subdivison = 3, material = None) -> None:
+    def __init__(self, name="Pointcloud", radius=0.01, subdivison=3, material=None) -> None:
         self.node_group = bpy.data.node_groups.new(type="GeometryNodeTree", name=name)
         self.node_group.nodes.clear()
         self.nodes = {}
@@ -27,10 +29,39 @@ class MeshToPointCloudNodeTree:
         self.links['setMaterialToRealizeInstances'] = self.node_group.links.new(self.nodes['setMaterial'].outputs['Geometry'], self.nodes['realizeInstances'].inputs['Geometry'])
         self.links['realizeInstancesToOutput'] = self.node_group.links.new(self.nodes['realizeInstances'].outputs['Geometry'], self.nodes['output'].inputs['Geometry'])
 
-        self.nodes['icoSphere'].inputs['Radius'].default_value = radius
-        self.nodes['icoSphere'].inputs['Subdivisions'].default_value = subdivison
+        self.nodes['icoSphere'].inputs['Radius'].default_value = 1
+
+        self.setPointsRadius(radius)
+        self.setPointsSubdivisions(subdivison)
+
         if material is not None:
             self.nodes['setMaterial'].inputs['Material'].default_value = material.data
 
     def setPointsRadius(self, radius):
-        self.nodes['icoSphere'].inputs['Radius'].default_value = radius
+        self.nodes['instanceOnPoints'].inputs['Scale'].default_value = (radius, radius, radius)
+
+    def setPointsSubdivisions(self, subdivison):
+        self.nodes['icoSphere'].inputs['Subdivisions'].default_value = subdivison
+
+    def setFloatAttributeAsRadius(self, attribute_name):
+        self._removeAttributeAsRadius()
+
+        self.nodes['radiusAttribute'] = self.node_group.nodes.new(type="GeometryNodeInputNamedAttribute")
+        self.links['radiusAttributeToInstanceOnPoints'] = self.node_group.links.new(self.nodes['radiusAttribute'].outputs['Attribute'], self.nodes['instanceOnPoints'].inputs['Scale'])
+
+        self.nodes['radiusAttribute'].data_type = 'FLOAT'
+        self.nodes['radiusAttribute'].inputs['Name'].default_value = attribute_name
+
+    def _removeAttributeAsRadius(self):
+        self._removeLink('radiusAttributeToInstanceOnPoints')
+        self._removeNode('radiusAttribute')
+
+    def _removeLink(self, link_name):
+        if link_name in self.links.keys():
+            self.node_group.links.remove(self.links[link_name])
+            self.links.pop(link_name)
+
+    def _removeNode(self, node_name):
+        if node_name in self.nodes.keys():
+            self.node_group.nodes.remove(self.nodes[node_name])
+            self.nodes.pop(node_name)
