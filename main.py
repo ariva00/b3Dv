@@ -1,11 +1,12 @@
 import bpy
 import numpy as np
 import open3d as o3d
+import os
 
-from b3Dv.scene import Scene
-from b3Dv.camera import Camera
-from b3Dv.mesh import Mesh
-from b3Dv.lights import SunLight
+from b3Dv import Scene
+from b3Dv import Camera
+from b3Dv import Mesh
+from b3Dv import SunLight
 
 suzanne = o3d.io.read_triangle_mesh('smooth_suzanne.obj')
 
@@ -45,6 +46,6 @@ camera.setRotation((80 * np.pi/180, 0 * np.pi/180, 135 * np.pi/180))
 
 scene.setSamples(8)
 
-scene.renderToFile("output.png")
+scene.renderToFile(os.path.join(os.getcwd(), "output.png"))
 
 bpy.ops.wm.save_mainfile(filepath = 'test.blend')
