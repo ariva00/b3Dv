@@ -31,7 +31,7 @@ mesh.material.setEmissionStrength(10)
 mesh.setShadeSmooth()
 mesh.asPointCloud()
 
-mesh.setLocation((0, 0, 1.4))
+mesh.setLocation((0, 0, -mesh.getMinZ()))
 scene.addObject(mesh)
 
 floor = mesh.getFloor()
@@ -40,7 +40,7 @@ scene.addObject(floor)
 sun = SunLight(rotation=(-30 * np.pi/180, 0, -10 * np.pi/180))
 scene.addObject(sun)
 
-camera.setLocation((2,2,1.8))
+camera.setLocation((2,2,mesh.getMaxZ()))
 camera.setRotation((80 * np.pi/180, 0 * np.pi/180, 135 * np.pi/180))
 
 scene.setSamples(8)

@@ -21,9 +21,9 @@ class Mesh:
         self.data.update()
         self.data.validate()
         self.object = bpy.data.objects.new(name, self.data)
-        self.object.location = location
-        self.object.rotation_euler = rotation
-        self.object.scale = scale
+        self.setLocation(location)
+        self.setRotation(rotation)
+        self.setScale(scale)
 
         if material is None:
             material = Material()
@@ -43,19 +43,28 @@ class Mesh:
     def getMinZ(self):
         minz = float('inf')
         for vert in self.data.vertices:
-            if vert.co[2] < minz:
-                minz = vert.co[2]
+            wolrd_vert = self.object.matrix_basis @ vert.co
+            if wolrd_vert[2] < minz:
+                minz = wolrd_vert[2]
         return minz
+    
     
     def getMaxZ(self):
         maxz = -float('inf')
         for vert in self.data.vertices:
-            if vert.co[2] > maxz:
-                maxz = vert.co[2]
+            wolrd_vert = self.object.matrix_basis @ vert.co
+            if wolrd_vert[2] > maxz:
+                maxz = wolrd_vert[2]
         return maxz
     
     def setLocation(self, location=(0, 0, 0)):
         self.object.location = location
+
+    def setRotation(self, rotation=(0, 0, 0)):
+        self.object.rotation_euler = rotation
+
+    def setScale(self, scale=(1, 1, 1)):
+        self.object.scale = scale
 
     def getFloor(self,  size=(10,10), shadow_catcher=True):
         minz = self.getMinZ()
@@ -68,7 +77,7 @@ class Mesh:
         faces = [
             (0, 1, 2, 3)
         ]
-        floor = Mesh("Floor", vertices=verices, faces=faces, location=(0,0, minz + self.object.location.z))
+        floor = Mesh("Floor", vertices=verices, faces=faces, location=(0,0, minz))
         floor.object.is_shadow_catcher = shadow_catcher
         return floor
     
