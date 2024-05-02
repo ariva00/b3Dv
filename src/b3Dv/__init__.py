@@ -10,3 +10,6 @@ from . camera import Camera
 from . mesh import Mesh
 from . lights import SunLight
 from . materials import Material
+
+def saveToFile(filename):
+    bpy.ops.wm.save_mainfile(filepath = filename)
