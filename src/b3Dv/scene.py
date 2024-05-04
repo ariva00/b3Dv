@@ -6,7 +6,7 @@ from b3Dv.lights import SunLight
 
 class Scene:
 
-    def __init__(self, name="Scene", engine="CYCLES", device="GPU", resolution=(1920, 1080), transparent=True, deafult_sun=False) -> None:
+    def __init__(self, name="Scene", engine="CYCLES", device="GPU", resolution=(1920, 1080), transparent=True, deafult_sun=False, gamma=1, exposure=0, shadow_catcher_alpha=1.0) -> None:
         self.data = bpy.data.scenes.new(name)
         self.setRenderEngine(engine=engine)
         self.setDevice(device=device)
@@ -14,6 +14,33 @@ class Scene:
         self.data.render.film_transparent = transparent
         self.data.view_settings.view_transform = "Raw"
 
+        self.data.view_layers[0].cycles.use_pass_shadow_catcher = True
+
+        self.data.use_nodes = True
+        self.nodes = {"input" : self.data.node_tree.nodes["Render Layers"], 
+                      "output" : self.data.node_tree.nodes["Composite"]}
+        self.data.node_tree.links.clear()
+        self.links = {}
+
+        self.nodes['input'].scene = self.data
+
+        self.nodes['invert'] = self.data.node_tree.nodes.new("CompositorNodeInvert")
+        self.nodes['add'] = self.data.node_tree.nodes.new("CompositorNodeMixRGB")
+        self.nodes['setAlpha'] = self.data.node_tree.nodes.new("CompositorNodeSetAlpha")
+
+        self.nodes['add'].blend_type = 'ADD'
+        self.nodes['setAlpha'].mode = 'REPLACE_ALPHA'
+
+        self.links['inputToInvert'] = self.data.node_tree.links.new(self.nodes["input"].outputs['Shadow Catcher'], self.nodes["invert"].inputs["Color"])
+        self.links['inputToAdd'] = self.data.node_tree.links.new(self.nodes['input'].outputs['Alpha'], self.nodes['add'].inputs['Image'])
+        self.links['invertToAdd'] = self.data.node_tree.links.new(self.nodes['invert'].outputs['Color'], self.nodes['add'].inputs['Image_001'])
+        self.links['inputToSetAlpha'] = self.data.node_tree.links.new(self.nodes['input'].outputs['Image'], self.nodes['setAlpha'].inputs['Image'])
+        self.links['addToSetAlpha'] = self.data.node_tree.links.new(self.nodes['add'].outputs['Image'], self.nodes['setAlpha'].inputs['Alpha'])
+        self.links['setAlphaToOutput'] = self.data.node_tree.links.new(self.nodes['setAlpha'].outputs['Image'], self.nodes['output'].inputs['Image'])
+
+        self.setShadowCatcherAlpha(shadow_catcher_alpha)
+        self.setGamma(gamma)
+        self.setExposure(exposure)
 
         world = bpy.data.worlds.new("World")
         self.data.world = world
@@ -42,6 +69,15 @@ class Scene:
 
     def addObject(self, object):
         self.data.collection.objects.link(object.object)
+
+    def setGamma(self, gamma):
+        self.data.view_settings.gamma = gamma
+
+    def setExposure(self, exposure):
+        self.data.view_settings.exposure = exposure
+
+    def setShadowCatcherAlpha(self, alpha):
+        self.nodes['add'].inputs['Fac'].default_value = alpha
 
     def renderToFile(self, filepath):
         self.data.render.filepath = filepath

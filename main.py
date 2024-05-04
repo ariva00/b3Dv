@@ -51,6 +51,7 @@ scene.addObject(floor)
 scene.addCamera(camera)
 
 # render and save file
+scene.setShadowCatcherAlpha(0.75)
 scene.setSamples(8)
 scene.renderToFile(os.path.join(os.getcwd(), "output.png"))
 saveToFile(os.path.join(os.getcwd(), "test.blend"))
