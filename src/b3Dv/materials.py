@@ -68,7 +68,7 @@ class Material:
 
         self.nodes['colorAttribute'].attribute_name = attribute_name
 
-    def setFloatAttributeAsColor(self, attribute_name, colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 1.0, 1.0, 1.0)]):
+    def setFloatAttributeAsColor(self, attribute_name, colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 1.0, 1.0, 1.0)], colors_positions = None):
         self._removeAttributeAsColor()
 
         self.nodes['colorAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")
@@ -82,10 +82,16 @@ class Material:
             if i == 0:
                 self.nodes['colorRamp'].color_ramp.elements[i].color = c
                 self.nodes['colorRamp'].color_ramp.elements[-1].color = colors[-1]
+                if colors_positions:
+                    self.nodes['colorRamp'].color_ramp.elements[i].position = colors_positions[0]
+                    self.nodes['colorRamp'].color_ramp.elements[-1].position = colors_positions[-1]
             elif i == len(colors)-1:
                 break
-            elem = self.nodes['colorRamp'].color_ramp.elements.new(i * 1/(len(colors)-1))
-            elem.color = c
+            else:
+                elem = self.nodes['colorRamp'].color_ramp.elements.new(i * 1/(len(colors)-1))
+                elem.color = c
+                if colors_positions:
+                    elem.position = colors_positions[i]
 
     def setColorAttributeAsEmissionColor(self, attribute_name):
         self._removeAttributeAsEmissionColor()
@@ -95,7 +101,7 @@ class Material:
 
         self.nodes['emissionColorAttribute'].attribute_name = attribute_name
 
-    def setFloatAttributeAsEmissionColor(self, attribute_name, colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 1.0, 1.0, 1.0)]):
+    def setFloatAttributeAsEmissionColor(self, attribute_name, colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 1.0, 1.0, 1.0)], colors_positions = None):
         self._removeAttributeAsEmissionColor()
 
         self.nodes['emissionColorAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")
@@ -107,12 +113,18 @@ class Material:
 
         for i, c in enumerate(colors):
             if i == 0:
-                self.nodes['emissionColorRamp'].color_ramp.elements[i].color = c
-                self.nodes['emissionColorRamp'].color_ramp.elements[-1].color = colors[-1]
+                self.nodes['colorRamp'].color_ramp.elements[i].color = c
+                self.nodes['colorRamp'].color_ramp.elements[-1].color = colors[-1]
+                if colors_positions:
+                    self.nodes['colorRamp'].color_ramp.elements[i].position = colors_positions[0]
+                    self.nodes['colorRamp'].color_ramp.elements[-1].position = colors_positions[-1]
             elif i == len(colors)-1:
                 break
-            elem = self.nodes['emissionColorRamp'].color_ramp.elements.new(i * 1/(len(colors)-1))
-            elem.color = c
+            else:
+                elem = self.nodes['colorRamp'].color_ramp.elements.new(i * 1/(len(colors)-1))
+                elem.color = c
+                if colors_positions:
+                    elem.position = colors_positions[i]
 
     def setFloatAttributeAsEmissionStrength(self, attribute_name):
         self._removeAttributeAsEmissionStrength()
