@@ -182,15 +182,15 @@ class Material:
 
         for i, c in enumerate(colors):
             if i == 0:
-                self.nodes['colorRamp'].color_ramp.elements[i].color = c
-                self.nodes['colorRamp'].color_ramp.elements[-1].color = colors[-1]
+                self.nodes['emissionColorRamp'].color_ramp.elements[i].color = c
+                self.nodes['emissionColorRamp'].color_ramp.elements[-1].color = colors[-1]
                 if colors_positions:
-                    self.nodes['colorRamp'].color_ramp.elements[i].position = colors_positions[0]
-                    self.nodes['colorRamp'].color_ramp.elements[-1].position = colors_positions[-1]
+                    self.nodes['emissionColorRamp'].color_ramp.elements[i].position = colors_positions[0]
+                    self.nodes['emissionColorRamp'].color_ramp.elements[-1].position = colors_positions[-1]
             elif i == len(colors)-1:
                 break
             else:
-                elem = self.nodes['colorRamp'].color_ramp.elements.new(i * 1/(len(colors)-1))
+                elem = self.nodes['emissionColorRamp'].color_ramp.elements.new(i * 1/(len(colors)-1))
                 elem.color = c
                 if colors_positions:
                     elem.position = colors_positions[i]

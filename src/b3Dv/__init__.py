@@ -13,3 +13,5 @@ from . materials import Material
 
 def saveToFile(filename):
     bpy.ops.wm.save_mainfile(filepath = filename)
+
+__all__ = ['Scene', 'Camera', 'Mesh', 'SunLight', 'Material', 'saveToFile']
