@@ -2,8 +2,19 @@ import bpy
 
 from b3Dv.materials import Material
 
+"""
+Class representing a Blender modifier that converts a mesh object to a point cloud.
+"""
 class MeshToPointCloudNodeTree:
     def __init__(self, name="Pointcloud", radius=0.01, subdivison=3, material=None) -> None:
+        """
+
+        :param name: Name of the Blender modifier created.
+        :param radius: Radius of the rendered pointclouds.
+        :param subdivision: Number of subdivisions of the icospheres representing the points.
+        :param material: Material object to link to the point cloud.
+
+        """
         self.node_group = bpy.data.node_groups.new(type="GeometryNodeTree", name=name)
         self.node_group.nodes.clear()
         self.nodes = {}
@@ -38,12 +49,30 @@ class MeshToPointCloudNodeTree:
             self.nodes['setMaterial'].inputs['Material'].default_value = material.data
 
     def setPointsRadius(self, radius):
+        """
+        Set radius of the point cloud points.
+
+        :param radius: Radius of the point cloud points.
+
+        """
         self.nodes['instanceOnPoints'].inputs['Scale'].default_value = (radius, radius, radius)
 
     def setPointsSubdivisions(self, subdivison):
+        """
+        Set number of subdivisions of the icospheres representing the points.
+
+        :param subdivison: Number of subdivisions of the icospheres representing the points.
+        
+        """
         self.nodes['icoSphere'].inputs['Subdivisions'].default_value = subdivison
 
     def setFloatAttributeAsRadius(self, attribute_name):
+        """
+        Link a float attribute to the radius of the point cloud points.
+
+        :param attribute_name: Name of the float attribute.
+
+        """
         self._removeAttributeAsRadius()
 
         self.nodes['radiusAttribute'] = self.node_group.nodes.new(type="GeometryNodeInputNamedAttribute")

@@ -1,6 +1,9 @@
 import bpy
 
 class Material:
+    """
+    Material class representing the Blender material node tree.
+    """
     def __init__(
             self, 
             name="Material",
@@ -14,6 +17,20 @@ class Material:
             emission_color_attribute_colors=None,
             emission_strength_attribute=None
             ) -> None:
+        """
+
+        :param name: Name of the material.
+        :param color: Base color of the material.
+        :param emission_color: Emission color of the material.
+        :param roughness: Roughness of the material.
+        :param emission_strenght: Emission strength of the material.
+        :param color_attribute: Name of the attribute to use as color. When the attribute is of type vector color_attribute_colors is expected. If not provided the color attribute will be considered a float attribute.k
+        :param color_attribute_colors: Colors to use for the color attribute.
+        :param emission_color_attribute: Name of the attribute to use as emission color.
+        :param emission_color_attribute_colors: Colors to use for the emission color attribute.
+        :param emission_strength_attribute: Name of the attribute to use as emission strength.
+
+        """
         self.data = bpy.data.materials.new(name)
         self.data.use_nodes = True
         self.node_group = self.data.node_tree
@@ -49,18 +66,48 @@ class Material:
             self.setFloatAttributeAsEmissionStrength(emission_strength_attribute)
 
     def setColor(self, color):
+        """
+        Set base color of the material.
+
+        :param color: Base color of the material.
+
+        """
         self.nodes['principledBSDF'].inputs['Base Color'].default_value = color
 
     def setRoughness(self, roughness):
+        """
+        Set roughness of the material.
+
+        :param roughness: Roughness value from 0 to 1, with 0 fully specular and 1 fully diffuse.
+
+        """
         self.nodes['principledBSDF'].inputs['Roughness'].default_value = roughness
 
     def setEmissionStrength(self, emission_strenght):
+        """
+        Set emission strength.
+
+        :param emission_strenght: Strength of the emitted light. 1 makes the object in the image exactly of the color set by the emission color.
+
+        """
         self.nodes['principledBSDF'].inputs['Emission Strength'].default_value = emission_strenght
 
     def setEmissionColor(self, emission_color):
+        """
+        Set emission color.
+
+        :param emission_color: Color of the light emission.
+
+        """
         self.nodes['principledBSDF'].inputs['Emission Color'].default_value = emission_color
     
     def setColorAttributeAsColor(self, attribute_name):
+        """
+        Link base color to named color attribute.
+
+        :param attribute_name: Name of the color attribute.
+
+        """
         self._removeAttributeAsColor()
 
         self.nodes['colorAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")
@@ -69,6 +116,14 @@ class Material:
         self.nodes['colorAttribute'].attribute_name = attribute_name
 
     def setFloatAttributeAsColor(self, attribute_name, colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 1.0, 1.0, 1.0)], colors_positions = None):
+        """
+        Link base color to named float attribute. The interpolation between colors is linear.
+
+        :param attribute_name: Name of the float attribute.
+        :param colors: List of colors (vec4) that represent the color ramp.
+        :param colors_positions: List of floats that determine the mapping of each color to a float value.
+
+        """
         self._removeAttributeAsColor()
 
         self.nodes['colorAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")
@@ -94,6 +149,12 @@ class Material:
                     elem.position = colors_positions[i]
 
     def setColorAttributeAsEmissionColor(self, attribute_name):
+        """
+        Link emission color to named float attribute.
+
+        :param attribute_name: Name of the color attribute.
+
+        """
         self._removeAttributeAsEmissionColor()
 
         self.nodes['emissionColorAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")
@@ -102,6 +163,14 @@ class Material:
         self.nodes['emissionColorAttribute'].attribute_name = attribute_name
 
     def setFloatAttributeAsEmissionColor(self, attribute_name, colors = [(0.0, 0.0, 0.0, 1.0), (1.0, 1.0, 1.0, 1.0)], colors_positions = None):
+        """
+        Link emission color to named float attribute. The interpolation between colors is linear.
+
+        :param attribute_name: Name of the color attribute.
+        :param colors: List of colors (vec4) that represent the color ramp.
+        :param colors_positions: List of floats that determine the mapping of each color to a float value.
+
+        """
         self._removeAttributeAsEmissionColor()
 
         self.nodes['emissionColorAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")
@@ -127,6 +196,12 @@ class Material:
                     elem.position = colors_positions[i]
 
     def setFloatAttributeAsEmissionStrength(self, attribute_name):
+        """
+        Link emission strength to named float attribute.
+
+        :param attribute_name: Name of the color attribute.
+
+        """
         self._removeAttributeAsEmissionStrength()
 
         self.nodes['emissionStrengthAttribute'] = self.node_group.nodes.new(type="ShaderNodeAttribute")

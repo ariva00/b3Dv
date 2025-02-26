@@ -28,6 +28,11 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 
+[project.optional-dependencies]
+docs = [
+    "sphinx"
+]
+
 [project.urls]
 Homepage = "https://github.com/ariva00/b3Dv"
 Repository = "https://github.com/ariva00/b3Dv.git"

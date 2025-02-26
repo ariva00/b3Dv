@@ -50,33 +50,87 @@ class Scene:
             self.addObject(sun)
 
     def setRenderEngine(self, engine):
+        """
+        Set Blender rendering engine.
+
+        :param engine: Engine name, either CYCLES or EEVEE
+
+        """
         self.data.render.engine = engine
 
     def setDevice(self, device):
+        """
+        Set rendering device.
+
+        :param device: Device to use when using CYCLES rendering engine, either GPU or CPU
+
+        """
         self.data.cycles.device = device
 
     def setResolution(self, resolution):
+        """
+        Set rendering resolution.
+
+        :param resolution: Size of the output image.
+
+        """
         self.data.render.resolution_x = resolution[0]
         self.data.render.resolution_y = resolution[1]
 
     def setSamples(self, samples):
+        """
+        Set rendering samples.
+
+        :param samples: Number of rendering samples.
+
+        """
         self.data.cycles.samples = samples
         self.data.eevee.taa_render_samples = samples
 
     def addCamera(self, camera:Camera):
+        """
+        Add camera object and set as active camera.
+
+        :param camera: Camera object.
+
+        """
         self.data.collection.objects.link(camera.object)
         self.data.camera = camera.object
 
     def addObject(self, object):
+        """
+        Add object to the scene.
+
+        :param object: Object to add to the scene.
+
+        """
         self.data.collection.objects.link(object.object)
 
     def setGamma(self, gamma):
+        """
+        Set gamma correction of the image.
+
+        :param gamma: Gamma value to use.
+
+        """
         self.data.view_settings.gamma = gamma
 
     def setExposure(self, exposure):
+        """
+        Set rendering exposure.
+
+        :param exposure: Exposure value to use.
+
+        """
         self.data.view_settings.exposure = exposure
 
     def setShadowCatcherAlpha(self, alpha):
+        """
+        Set alpha value of the shadow catcher.
+
+        :param alpha: Alpha value to use.
+
+        """
         self.nodes['add'].inputs['Fac'].default_value = alpha
 
     def renderToFile(self, filepath):
